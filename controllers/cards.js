@@ -1,12 +1,7 @@
 const Card = require('../models/card');
-const ConflictError = require('../errors/ConflictError');
 const InaccurateDataError = require('../errors/InaccurateDataError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
 const NotFoundError = require('../errors/NotFoundError');
-const {
-  ERROR_BAD_REQUEST,
-  FORBIDDEN_ERROR,
-} = require('../errors/errors');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 function receiveCards(req, res, next) {
   Card
@@ -94,7 +89,7 @@ function deleteCard(req, res, next) {
     .findById(req.params.cardId)
     .then((card) => {
       if (!card) throw new InaccurateDataError('Переданы некорректные данные для снятия лайка');
-      if (!card.owner.equals(req.user._id)) res.status(FORBIDDEN_ERROR).send({ message: 'Нет прав на удаление карточки' });
+      if (!card.owner.equals(req.user._id)) throw new ForbiddenError('Нет прав на удаление карточки');
       card
         .remove()
         .then(() => res.send({ data: card }))

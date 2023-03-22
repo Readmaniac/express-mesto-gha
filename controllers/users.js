@@ -83,12 +83,11 @@ function getUserInfo(req, res, next) {
 }
 
 function getCurrentUserInfo(req, res, next) {
-  const { id } = req.params;
   User
-    .findById(id)
+    .findById(req.user._id)
     .then((user) => {
       if (user) return res.send({ data: user });
-      return new NotFoundError('Пользователь по указанному id не найден');
+      throw new NotFoundError('Пользователь по указанному id не найден');
     })
     .catch((err) => {
       if (err.name === 'CastError') {
