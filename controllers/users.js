@@ -28,7 +28,7 @@ function registerUser(req, res, next) {
       email,
       password: hash,
     }))
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.code === 11000) {
         res.status(CONFLICT_REQUEST).send({ message: 'Пользователь с такими данными уже существует' });
@@ -44,7 +44,7 @@ function loginUser(req, res, next) {
   const { email, password } = req.body;
 
   User
-    .findUser(email, password)
+    .findOne({ email }).select('+password')
     .orFail(() => res.status(UNAUTHORIZED_ERROR).send({ message: 'Пользователь не найден' }))
     .then((user) => bcrypt.compare(password, user.password).then((matched) => {
       if (matched) {
@@ -54,7 +54,7 @@ function loginUser(req, res, next) {
     }))
     .then((user) => {
       const jwt = jsonwebtoken.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-      res.send({ _id: jwt });
+      return res.send({ _id: jwt });
     })
     .catch(next);
 }
