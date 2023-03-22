@@ -1,15 +1,17 @@
 const router = require('express').Router();
 const {
-  createUser,
+  registerUser,
   getUsersInfo,
   getUserInfo,
   setUserInfo,
   setUserAvatar,
+  getCurrentUserInfo,
 } = require('../controllers/users');
 
-router.post('/', createUser);
+router.post('/', registerUser);
 router.get('/', getUsersInfo);
 router.get('/:id', getUserInfo);
+router.get('/me', getCurrentUserInfo);
 router.patch('/me', setUserInfo);
 router.patch('/me/avatar', setUserAvatar);
 

@@ -11,7 +11,7 @@ const {
   UNAUTHORIZED_ERROR,
 } = require('../errors/errors');
 
-function createUser(req, res, next) {
+function registerUser(req, res, next) {
   const {
     name,
     about,
@@ -67,6 +67,19 @@ function getUsersInfo(req, res) {
 }
 
 function getUserInfo(req, res) {
+  const { id } = req.params;
+  User
+    .findById(id)
+    .then((user) => {
+      if (user) return res.send({ data: user });
+      return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному id не найден' });
+    })
+    .catch((err) => (
+      err.name === 'CastError' ? res.status(ERROR_BAD_REQUEST).send({ message: 'Передан некорректный id' }) : res.status(ERROR_INTERNAL_SERVER).send({ message: 'Ошибка на сервере' })
+    ));
+}
+
+function getCurrentUserInfo(req, res) {
   const { id } = req.params;
   User
     .findById(id)
@@ -136,9 +149,11 @@ function setUserAvatar(req, res) {
 }
 
 module.exports = {
-  createUser,
+  registerUser,
   getUsersInfo,
   getUserInfo,
   setUserInfo,
   setUserAvatar,
+  loginUser,
+  getCurrentUserInfo,
 };

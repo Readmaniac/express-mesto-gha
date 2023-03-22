@@ -1,5 +1,10 @@
 const Card = require('../models/card');
-const { ERROR_BAD_REQUEST, ERROR_NOT_FOUND, ERROR_INTERNAL_SERVER } = require('../errors/errors');
+const {
+  ERROR_BAD_REQUEST,
+  ERROR_NOT_FOUND,
+  ERROR_INTERNAL_SERVER,
+  FORBIDDEN_ERROR,
+} = require('../errors/errors');
 
 function receiveCards(req, res) {
   Card
@@ -79,21 +84,18 @@ function dislikeCard(req, res) {
     });
 }
 
-function deleteCard(req, res) {
-  const { id } = req.params;
-
+function deleteCard(req, res, next) {
   Card
-    .findByIdAndRemove(id)
+    .findById(req.params.cardId)
     .then((card) => {
-      if (card) return res.send({ data: card });
-
-      return res.status(ERROR_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
+      if (!card) res.status(ERROR_BAD_REQUEST).send({ message: 'Передан некорректный id' });
+      if (!card.owner.equals(req.user._id)) res.status(FORBIDDEN_ERROR).send({ message: 'Нет прав на удаление карточки' });
+      card
+        .remove()
+        .then(() => res.send({ data: card }))
+        .catch(next);
     })
-    .catch((err) => (
-      err.name === 'CastError'
-        ? res.status(ERROR_BAD_REQUEST).send({ message: 'Передан некорректный id' })
-        : res.status(ERROR_INTERNAL_SERVER).send({ message: 'Ошибка на сервере' })
-    ));
+    .catch(next);
 }
 
 module.exports = {
