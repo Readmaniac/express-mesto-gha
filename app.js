@@ -6,14 +6,16 @@ const routeUsers = require('./routes/users');
 const routeCards = require('./routes/cards');
 const routeSignUp = require('./routes/signup');
 const routeSignIn = require('./routes/signin');
-// const auth = require('./middlewares/auth');
+const auth = require('./middlewares/auth');
+
+const URL = 'mongodb://0.0.0.0:27017/mestodb';
 
 const { PORT = 3000 } = process.env;
 
 const { ERROR_NOT_FOUND } = require('./errors/errors');
 
 mongoose.set('strictQuery', true);
-mongoose.connect('mongodb://0.0.0.0:27017/mestodb');
+mongoose.connect(URL);
 
 const app = express();
 
@@ -22,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/', routeSignUp);
 app.use('/', routeSignIn);
-// app.use(auth);
+app.use(auth);
 app.use('/users', routeUsers);
 app.use('/cards', routeCards);
 
