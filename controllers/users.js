@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jsonwebtoken = require('jsonwebtoken');
 const { JWT_SECRET } = require('../utils/constants');
 

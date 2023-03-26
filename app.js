@@ -32,5 +32,6 @@ app.use((req, res) => {
   res.status(ERROR_NOT_FOUND).send({ message: 'Страницы по запрошенному URL не существует' });
 });
 
-// Если всё работает, консоль покажет, какой порт приложение слушает
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log('сервер работает');
+});

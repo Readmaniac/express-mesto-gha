@@ -1,22 +1,23 @@
 const jsonwebtoken = require('jsonwebtoken');
-const { UNAUTHORIZED_ERROR } = require('../errors/errors');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 const { JWT_SECRET } = require('../utils/constants');
 
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer')) {
-    res.status(UNAUTHORIZED_ERROR).send({ message: 'Необходима авторизация' });
+    return next(new UnauthorizedError('Необходима авторизация'));
   }
-
+  let payload;
   const jwt = authorization.replace('Bearer ', '');
   try {
-    jsonwebtoken.verify(jwt, JWT_SECRET);
+    payload = jsonwebtoken.verify(jwt, JWT_SECRET);
   } catch (err) {
-    res.status(UNAUTHORIZED_ERROR).send({ message: 'Необходима авторизация' });
+    return next(new UnauthorizedError('Необходима авторизация'));
   }
+  req.user = payload;
 
-  next();
+  return next();
 };
 
 module.exports = auth;
