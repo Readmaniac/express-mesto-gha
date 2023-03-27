@@ -83,8 +83,8 @@ function dislikeCard(req, res, next) {
 function deleteCard(req, res, next) {
   Card
     .findById(req.params.cardId)
-    .orFail(() => { throw new NotFoundError('Переданы некорректные данные на удаление карточки'); })
     .then((card) => {
+      if (!card) throw new NotFoundError('Переданы некорректные данные на удаление карточки');
       if (card.owner.toString() !== req.user._id) throw new ForbiddenError('Нет прав на удаление карточки');
       card
         .remove()
