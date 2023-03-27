@@ -1,7 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-
+const { errors } = require('celebrate');
+const NotFoundError = require('./errors/NotFoundError');
+const errorHandler = require('./middlewares/error-handler');
 const routeUsers = require('./routes/users');
 const routeCards = require('./routes/cards');
 const routeSignUp = require('./routes/signup');
@@ -28,9 +30,9 @@ app.use(auth);
 app.use('/users', routeUsers);
 app.use('/cards', routeCards);
 
-app.use((req, res) => {
-  res.status(ERROR_NOT_FOUND).send({ message: 'Страницы по запрошенному URL не существует' });
-});
+app.use((req, res, next) => next(new NotFoundError('Страницы по запрошенному URL не существует')));
+app.use(errors());
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log('сервер работает');
