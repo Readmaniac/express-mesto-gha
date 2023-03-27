@@ -81,19 +81,11 @@ function dislikeCard(req, res, next) {
 }
 
 function deleteCard(req, res, next) {
-  const { id: cardId } = req.params;
-  const { userId } = req.user;
-
   Card
-    .findById({
-      _id: cardId,
-    })
+    .findById(req.params.cardId)
     .then((card) => {
       if (!card) throw new NotFoundError('Переданы некорректные данные на удаление карточки');
-
-      const { owner: cardOwnerId } = card;
-      if (cardOwnerId.valueOf() !== userId) throw new ForbiddenError('Нет прав на удаление карточки');
-
+      if (card.owner.toString() !== req.user._id) throw new ForbiddenError('Нет прав на удаление карточки');
       card
         .remove()
         .then(() => res.send({ data: card }))
