@@ -42,13 +42,11 @@ function likeCard(req, res, next) {
         new: true,
       },
     )
-    .then((card) => {
-      if (card) return res.send({ data: card });
-      return new NotFoundError('Карточка с указанным id не найдена');
-    })
+    .orFail(() => { throw new NotFoundError('Карточка с указанным id не найдена'); })
+    .then((data) => res.send(data))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new InaccurateDataError('Переданы некорректные данные для постановки лайка'));
+        next(new InaccurateDataError('Переданы некорректные данные для снятия лайка'));
       } else {
         next(err);
       }
@@ -71,10 +69,8 @@ function dislikeCard(req, res, next) {
         new: true,
       },
     )
-    .then((card) => {
-      if (card) return res.send({ data: card });
-      return new NotFoundError('Карточка с указанным id не найдена');
-    })
+    .orFail(() => { throw new NotFoundError('Карточка с указанным id не найдена'); })
+    .then((data) => res.send(data))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new InaccurateDataError('Переданы некорректные данные для снятия лайка'));
@@ -88,7 +84,7 @@ function deleteCard(req, res, next) {
   Card
     .findById(req.params.cardId)
     .then((card) => {
-      if (!card) throw new InaccurateDataError('Переданы некорректные данные для снятия лайка');
+      if (!card) throw new InaccurateDataError('Переданы некорректные данные на удаление карточки');
       if (!card.owner.equals(req.user._id)) throw new ForbiddenError('Нет прав на удаление карточки');
       card
         .remove()

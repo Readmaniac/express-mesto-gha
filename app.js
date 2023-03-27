@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/', routeSignUp);
 app.use('/', routeSignIn);
-app.use(auth);
+// app.use(auth);
 app.use('/users', routeUsers);
 app.use('/cards', routeCards);
 
