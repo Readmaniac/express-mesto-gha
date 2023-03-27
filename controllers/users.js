@@ -72,12 +72,11 @@ function getUsersInfo(req, res, next) {
 }
 
 function getUserInfo(req, res, next) {
-  const { id } = req.params;
   User
-    .findById(id)
+    .findById(req.params._id)
+    .orFail(() => { throw new NotFoundError('Пользователь по указанному id не найден'); })
     .then((user) => {
-      if (user) return res.send({ data: user });
-      return new NotFoundError('Пользователь по указанному id не найден');
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
