@@ -92,7 +92,7 @@ function getCurrentUserInfo(req, res, next) {
   User
     .findById(req.user._id)
     .then((user) => {
-      if (user) return res.send({ data: user });
+      if (user) return res.send(user);
       throw new NotFoundError('Пользователь по указанному id не найден');
     })
     .catch((err) => {

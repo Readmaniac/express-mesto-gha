@@ -14,8 +14,6 @@ const URL = 'mongodb://0.0.0.0:27017/mestodb';
 
 const { PORT = 3000 } = process.env;
 
-const { ERROR_NOT_FOUND } = require('./errors/errors');
-
 mongoose.set('strictQuery', true);
 mongoose.connect(URL);
 
