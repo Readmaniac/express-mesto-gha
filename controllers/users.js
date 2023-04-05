@@ -73,7 +73,7 @@ function getUsersInfo(req, res, next) {
 
 function getUserInfo(req, res, next) {
   User
-    .findById(req.params._id)
+    .findById(req.params.id)
     .orFail(() => { throw new NotFoundError('Пользователь по указанному id не найден'); })
     .then((user) => {
       res.send(user);
